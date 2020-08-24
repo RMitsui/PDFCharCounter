@@ -1,7 +1,7 @@
 var url = 'https://github.com/RMitsui/PDFCharCounter/js/pdfjs/compressed.tracemonkey-pldi-09.pdf'
 
 var pdfjsLib = window['pdfjs-dist/build/pdf'];
-pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc = './pdfjs/build/pdf.worker.js';
 
 var loadingTask = pdfjsLib.getDocument(url);
 loadingTask.promise.then(function(pdf) {

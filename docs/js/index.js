@@ -1,3 +1,6 @@
+var pdfjsLib = window['pdfjs-dist/build/pdf'];
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdfjs/build/pdf.worker.js';
+
 function getPageText(pageNum, pdf) {
     return new Promise(function (resolve, reject) {
         pdf.getPage(pageNum).then(function (pdfPage) {
@@ -13,19 +16,6 @@ function getPageText(pageNum, pdf) {
         });
     });
 }
-
-let dropZone = document.getElementById('dropzone');
-dropZone.addEventListener('dragover', function(event){
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'copy';
-});
-
-dropZone.addEventListener('drop', function(){
-    event.preventDefault();
-    var files = event.dataTransfer.files;
-    if(files.length > 1) return alert('複数のファイルが選択されています．');
-    scanPDF(files);
-});
 
 function scanPDF(file) {
     var fileReader = new FileReader();
@@ -45,10 +35,18 @@ function scanPDF(file) {
     };
 };
 
-var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf'
+let dropZone = document.getElementById('dropzone');
+dropZone.addEventListener('dragover', function(event){
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+});
 
-var pdfjsLib = window['pdfjs-dist/build/pdf'];
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdfjs/build/pdf.worker.js';
+dropZone.addEventListener('drop', function(){
+    event.preventDefault();
+    var files = event.dataTransfer.files;
+    if(files.length > 1) return alert('複数のファイルが選択されています．');
+    scanPDF(files);
+});
 
 /*
 var loadingTask = pdfjsLib.getDocument(url);

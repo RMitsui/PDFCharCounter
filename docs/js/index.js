@@ -1,6 +1,6 @@
-function getPageText(pageNum, PDFDocumentInstance) {
+function getPageText(pageNum, pdf) {
     return new Promise(function (resolve, reject) {
-        PDFDocumentInstance.getPage(pageNum).then(function (pdfPage) {
+        pdf.getPage(pageNum).then(function (pdfPage) {
             pdfPage.getTextContent().then(function (textContent) {
                 var textItems = textContent.items;
                 var finalString = "";
@@ -14,11 +14,43 @@ function getPageText(pageNum, PDFDocumentInstance) {
     });
 }
 
+let dropZone = document.getElementById('dropzone');
+dropZone.addEventListener('dragover', function(event){
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+});
+
+dropZone.addEventListener('drop', function(){
+    event.preventDefault();
+    var files = event.dataTransfer.files;
+    if(files.length > 1) return alert('複数のファイルが選択されています．');
+    scanPDF(files);
+});
+
+function scanPDF(file) {
+    var fileReader = new FileReader();
+    fileReader.onload = function() {
+        var typedarray = new Uint8Array(this.result);
+        pdfjsLib.getDocument(typedarray).then(function(pdf) {
+            console.log('PDF loaded');
+            for (var pageNumber=1;pageNumber <= pdf.numPages; pageNumber++){
+                pdf.getPage(pageNumber).then(function(page) {
+                    getPageText(pageNumber, pdf).then(function (textPage) {
+                        console.log(textPage);
+                    });
+                });
+            }
+            
+        });
+    };
+};
+
 var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf'
 
 var pdfjsLib = window['pdfjs-dist/build/pdf'];
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdfjs/build/pdf.worker.js';
 
+/*
 var loadingTask = pdfjsLib.getDocument(url);
 loadingTask.promise.then(function(pdf) {
   console.log('PDF loaded');
@@ -55,4 +87,5 @@ loadingTask.promise.then(function(pdf) {
   // PDF loading error
   console.error(reason);
 });
+*/
 

@@ -1,6 +1,8 @@
 var pdfjsLib = window['pdfjs-dist/build/pdf'];
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdfjs/build/pdf.worker.js';
 
+var pdftext = document.getElementById("pdftext");
+
 function getPageText(pageNum, pdf) {
     return new Promise(function (resolve, reject) {
         pdf.getPage(pageNum).then(function (pdfPage) {
@@ -18,7 +20,6 @@ function getPageText(pageNum, pdf) {
 }
 
 function scanPDF(file) {
-    var pdftext = document.getElementById("pdftext");
     pdftext.value = "";
     var fileReader = new FileReader();
     fileReader.onload = function() {
@@ -27,12 +28,10 @@ function scanPDF(file) {
         var loadingTask = pdfjsLib.getDocument(typedarray);
         loadingTask.promise.then(pdf => {
             console.log('PDF loaded');
-            for (var pageNumber=1;pageNumber <= pdf.numPages; pageNumber++){
-                pdf.getPage(pageNumber).then(function(page) {
+            for (var pageNumber=1;pageNumber < pdf.numPages; pageNumber++){
                     getPageText(pageNumber, pdf).then(function (textPage) {
                         pdftext.value += textPage;
                     });
-                });
             }
         });
     }

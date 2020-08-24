@@ -18,6 +18,8 @@ function getPageText(pageNum, pdf) {
 }
 
 function scanPDF(file) {
+    var pdftext = document.getElementById("pdftext");
+    pdftext.value = "";
     var fileReader = new FileReader();
     fileReader.onload = function() {
         var typedarray = new Uint8Array(this.result);
@@ -28,7 +30,7 @@ function scanPDF(file) {
             for (var pageNumber=1;pageNumber <= pdf.numPages; pageNumber++){
                 pdf.getPage(pageNumber).then(function(page) {
                     getPageText(pageNumber, pdf).then(function (textPage) {
-                        console.log(textPage);
+                        pdftext.value += textPage;
                     });
                 });
             }

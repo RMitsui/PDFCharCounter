@@ -47,7 +47,8 @@ dropZone.addEventListener('drop', function(){
     event.preventDefault();
     var files = event.dataTransfer.files;
     if(files.length > 1) return alert('複数のファイルが選択されています．');
-    scanPDF(files);
+
+    scanPDF(files[0]);
 });
 
 let fileInput = document.getElementById('file');

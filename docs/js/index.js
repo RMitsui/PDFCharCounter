@@ -21,6 +21,7 @@ function scanPDF(file) {
     var fileReader = new FileReader();
     fileReader.onload = function() {
         var typedarray = new Uint8Array(this.result);
+        console.log('scanPDF()');
         var loadingTask = pdfjsLib.getDocument(typedarray);
         loadingTask.promise.then(pdf => {
             console.log('PDF loaded');
@@ -32,9 +33,9 @@ function scanPDF(file) {
                 });
             }
         });
-        fileReader.readAsArrayBuffer(file);
-    };
-};
+    }
+    fileReader.readAsArrayBuffer(file);
+}
 
 let dropZone = document.getElementById('dropzone');
 dropZone.addEventListener('dragover', function(event){
@@ -48,6 +49,12 @@ dropZone.addEventListener('drop', function(){
     if(files.length > 1) return alert('複数のファイルが選択されています．');
     scanPDF(files);
 });
+
+let fileInput = document.getElementById('file');
+fileInput.onchange = function(event) {
+    var file = event.target.files[0];
+    scanPDF(file);
+}
 
 /*
 var loadingTask = pdfjsLib.getDocument(url);

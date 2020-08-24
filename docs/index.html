@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>PDF文字数カウンター</title>
+
+    <meta name="viewport" content="width=device-width, initial=1.0">
+    <meta name="description" lang="ja" content="PDFの文字数をカウントして表示するWEBサービス">
+    <!--<meta property="og:image" content="">
+    <link rel="shortcut icon" href="" />
+    <link rel="apple-touch-icon" href="" />-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.css" />
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.4.0/gpx.min.js"></script>
+</head>
+
+<body onload="init()">
+    <div id="header">
+        <div class="title">PDF文字数カウンター</div>
+    </div>
+
+    <div id="container">
+        <div id="dropzone" effectAllowed="move">
+            <img src="img/upload.svg" width="96" height="96">
+            <p>PDFファイルをドラッグ＆ドロップ</p>
+        </div>
+
+        <div id="main">
+            <div class="main-header">
+                <div class="title head">PDFファイル情報</div>
+            </div>
+            <p id="filename" class="fs-18">ファイル名：</p>
+            <p id="filesize" class="fs-18">ファイルサイズ：</p>
+            <p id="charcount" class="fs-18">文字数：</p>
+            <p id="wordcount" class="fs-18">単語数：</p>
+        </div>
+    </div>
+
+    <div id="footer">
+        ©2020 <a href="https://github.com/RMitsui">RMitsui</a>. All Rights Reserved.
+    </div>
+
+    <script src = "js/index.js"></script>
+</body>
+</html>

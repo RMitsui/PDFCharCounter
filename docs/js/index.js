@@ -1,3 +1,19 @@
+function getPageText(pageNum, PDFDocumentInstance) {
+    return new Promise(function (resolve, reject) {
+        PDFDocumentInstance.getPage(pageNum).then(function (pdfPage) {
+            pdfPage.getTextContent().then(function (textContent) {
+                var textItems = textContent.items;
+                var finalString = "";
+                for (var i=0; i<textItems.length; i++){
+                    var item = textItems[i];
+                    finalString += item.str + " ";
+                }
+                resolve(finalString);
+            });
+        });
+    });
+}
+
 var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf'
 
 var pdfjsLib = window['pdfjs-dist/build/pdf'];
@@ -30,8 +46,13 @@ loadingTask.promise.then(function(pdf) {
     renderTask.promise.then(function () {
       console.log('Page rendered');
     });
+
+    getPageText(pageNumber, pdf).then(function (textPage) {
+        console.log(textPage);
+    });
   });
 }, function (reason) {
   // PDF loading error
   console.error(reason);
 });
+

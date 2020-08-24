@@ -21,7 +21,8 @@ function scanPDF(file) {
     var fileReader = new FileReader();
     fileReader.onload = function() {
         var typedarray = new Uint8Array(this.result);
-        pdfjsLib.getDocument(typedarray).then(function(pdf) {
+        var loadingTask = pdfjsLib.getDocument(typedarray);
+        loadingTask.promise.then(pdf => {
             console.log('PDF loaded');
             for (var pageNumber=1;pageNumber <= pdf.numPages; pageNumber++){
                 pdf.getPage(pageNumber).then(function(page) {
@@ -30,8 +31,8 @@ function scanPDF(file) {
                     });
                 });
             }
-            
         });
+        fileReader.readAsArrayBuffer(file);
     };
 };
 

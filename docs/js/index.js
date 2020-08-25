@@ -2,13 +2,19 @@ var pdfjsLib = window['pdfjs-dist/build/pdf'];
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdfjs/build/pdf.worker.js';
 
 var pdftext = document.getElementById("pdftext");
+var filename = document.getElementById("filename");
+var filesize = document.getElementById("filesize");
+var pages = document.getElementById("pages");
 var charcount = document.getElementById("charcount");
 var wordcount = document.getElementById("wordcount");
 var text = "";
 
-async function showPDFDData() {
-    charcount.innerText = "文字数： " + pdftext.value.length;
-    wordcount.innerText = "単語数： " + pdftext.value.split(" ").length;
+async function showPDFDData(file, numPages) {
+    filename.innerText = "ファイル名：　" + file.name;
+    filesize.innerText = "ファイルサイズ：　" + file.size + "Byte";
+    pages.innerText = "ページ数：　" + numPages;
+    charcount.innerText = "文字数： " + pdftext.value.replace(/^={10}Page\d={10}$/,"").length;
+    wordcount.innerText = "単語数： " + (pdftext.value.split(" ").length - numPages);
 }
 
 function getPageText(pageNum, pdf) {
@@ -40,16 +46,32 @@ async function scanPDF(file) {
         //console.log('scanPDF()');
         var pdf = await pdfjsLib.getDocument(typedarray).promise;
         //console.log('PDF loaded');
-        for (var pageNumber=1;pageNumber <= pdf.numPages; pageNumber++){
+        for (var pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++){
                 var textPage = await getPageText(pageNumber, pdf);
-                pdftext.value += "\n\n==========Page" + pageNumber + "==========\n";
-                pdftext.value += textPage;
+                pdftext.value += "==========Page" + pageNumber + "==========\n";
+                pdftext.value += textPage + "\n\n";
         }
         text = pdftext.value;
-        await showPDFDData();
+        await showPDFDData(file,  pdf.numPages);
     }
     fileReader.readAsArrayBuffer(file);
     
+}
+
+function checkFileType(file) {
+    if(file.name.match(/.pdf$/)){
+        return false;
+    }else{
+        alert('PDF形式のファイルのみ対応しています．');
+        return true;
+    }
+}
+
+let fileInput = document.getElementById('file');
+fileInput.onchange = function(event) {
+    var file = event.target.files[0];
+    if(checkFileType(file)) return;
+    scanPDF(file);
 }
 
 let dropZone = document.getElementById('dropzone');
@@ -62,14 +84,11 @@ dropZone.addEventListener('drop', function(){
     event.preventDefault();
     var files = event.dataTransfer.files;
     if(files.length > 1) return alert('複数のファイルが選択されています．');
+    if(checkFileType(files[0])) return;
     scanPDF(files[0]);
 });
 
-let fileInput = document.getElementById('file');
-fileInput.onchange = function(event) {
-    var file = event.target.files[0];
-    scanPDF(file);
-}
+
 
 let deleteSpace = document.getElementById('deletespace');
 deleteSpace.onchange = function(event) {

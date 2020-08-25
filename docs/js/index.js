@@ -2,6 +2,14 @@ var pdfjsLib = window['pdfjs-dist/build/pdf'];
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdfjs/build/pdf.worker.js';
 
 var pdftext = document.getElementById("pdftext");
+var charcount = document.getElementById("charcount");
+var wordcount = document.getElementById("wordcount");
+var text = "";
+
+async function showPDFDData() {
+    charcount.innerText = "文字数： " + pdftext.value.length;
+    wordcount.innerText = "単語数： " + pdftext.value.split(" ").length;
+}
 
 function getPageText(pageNum, pdf) {
     return new Promise(function (resolve, reject) {
@@ -11,7 +19,12 @@ function getPageText(pageNum, pdf) {
                 var finalString = "";
                 for (var i=0; i<textItems.length; i++){
                     var item = textItems[i];
-                    finalString += item.str + " ";
+                    if(item.str[item.str.length-1] != "-"){
+                        finalString += item.str + " ";
+                    }else{
+                        finalString += item.str.slice(0,-1);
+                    }
+                    
                 }
                 resolve(finalString);
             });
@@ -19,23 +32,24 @@ function getPageText(pageNum, pdf) {
     });
 }
 
-function scanPDF(file) {
+async function scanPDF(file) {
     pdftext.value = "";
     var fileReader = new FileReader();
-    fileReader.onload = function() {
+    fileReader.onload = async function() {
         var typedarray = new Uint8Array(this.result);
-        console.log('scanPDF()');
-        var loadingTask = pdfjsLib.getDocument(typedarray);
-        loadingTask.promise.then(pdf => {
-            console.log('PDF loaded');
-            for (var pageNumber=1;pageNumber < pdf.numPages; pageNumber++){
-                    getPageText(pageNumber, pdf).then(function (textPage) {
-                        pdftext.value += textPage;
-                    });
-            }
-        });
+        //console.log('scanPDF()');
+        var pdf = await pdfjsLib.getDocument(typedarray).promise;
+        //console.log('PDF loaded');
+        for (var pageNumber=1;pageNumber <= pdf.numPages; pageNumber++){
+                var textPage = await getPageText(pageNumber, pdf);
+                pdftext.value += "\n\n==========Page" + pageNumber + "==========\n";
+                pdftext.value += textPage;
+        }
+        text = pdftext.value;
+        await showPDFDData();
     }
     fileReader.readAsArrayBuffer(file);
+    
 }
 
 let dropZone = document.getElementById('dropzone');
@@ -48,7 +62,6 @@ dropZone.addEventListener('drop', function(){
     event.preventDefault();
     var files = event.dataTransfer.files;
     if(files.length > 1) return alert('複数のファイルが選択されています．');
-
     scanPDF(files[0]);
 });
 
@@ -58,42 +71,16 @@ fileInput.onchange = function(event) {
     scanPDF(file);
 }
 
-/*
-var loadingTask = pdfjsLib.getDocument(url);
-loadingTask.promise.then(function(pdf) {
-  console.log('PDF loaded');
-  
-  // Fetch the first page
-  var pageNumber = 1;
-  pdf.getPage(pageNumber).then(function(page) {
-    console.log('Page loaded');
-    
-    var scale = 1.5;
-    var viewport = page.getViewport({scale: scale});
+let deleteSpace = document.getElementById('deletespace');
+deleteSpace.onchange = function(event) {
+    if(deleteSpace.checked){
+        text = pdftext.value;
+        pdftext.value = text.replace(/\s/g,"");
+        
+    }else{
+        pdftext.value = text;
+    }
+    showPDFDData();
 
-    // Prepare canvas using PDF page dimensions
-    var canvas = document.getElementById('the-canvas');
-    var context = canvas.getContext('2d');
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-
-    // Render PDF page into canvas context
-    var renderContext = {
-      canvasContext: context,
-      viewport: viewport
-    };
-    var renderTask = page.render(renderContext);
-    renderTask.promise.then(function () {
-      console.log('Page rendered');
-    });
-
-    getPageText(pageNumber, pdf).then(function (textPage) {
-        console.log(textPage);
-    });
-  });
-}, function (reason) {
-  // PDF loading error
-  console.error(reason);
-});
-*/
+}
 

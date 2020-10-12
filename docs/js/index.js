@@ -10,11 +10,15 @@ var wordcount = document.getElementById("wordcount");
 var text = "";
 
 async function showPDFDData(file, numPages) {
-    filename.innerText = "ファイル名：　" + file.name;
-    filesize.innerText = "ファイルサイズ：　" + file.size + "Byte";
+    if(file != null){
+        filename.innerText = "ファイル名：　" + file.name;
+        filesize.innerText = "ファイルサイズ：　" + file.size + "Byte";
+    }
     pages.innerText = "ページ数：　" + numPages;
-    charcount.innerText = "文字数： " + pdftext.value.replace(/^={10}Page\d={10}$/,"").length;
-    wordcount.innerText = "単語数： " + (pdftext.value.split(" ").length - numPages);
+    //Page数表記をreplaceで消した上でページ末に挿入している改行の数を引く
+    charcount.innerText = "文字数： " + (pdftext.value.replace(/\=+Page\d+\=+\n/,"").length - numPages);
+    //空白でsplitして空文字列になった配列を削除した上でPage数表記の数を引く
+    wordcount.innerText = "単語数： " + (pdftext.value.split(/[ \n]/).filter(v => v).length - numPages);
 }
 
 function getPageText(pageNum, pdf) {
@@ -94,12 +98,12 @@ let deleteSpace = document.getElementById('deletespace');
 deleteSpace.onchange = function(event) {
     if(deleteSpace.checked){
         text = pdftext.value;
-        pdftext.value = text.replace(/\s/g,"");
+        pdftext.value = text.replace(/ |　/g,"");
         
     }else{
         pdftext.value = text;
     }
-    showPDFDData();
+    showPDFDData(null,pages.innerText.replace("ページ数：　",""));
 
 }
 

@@ -4,5 +4,42 @@
   }
 
 #dropzone {
-    background-color: beige;
+    background-color: #fff;
+    color: #444;
+    min-height: 50px;
+    padding: 50px 0px;
+    font-size: 16px;
+    text-shadow: 1px 1px 0 #fff;
+    text-align: center;
+    margin: 10px 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,.1);
+}
+
+#dropzone.dropover {
+  background-color: #ddd;
+}
+
+#main {
+  background-color: #fff;
+  color: #444;
+}
+
+#header {
+  background-color: #f7945b;
+  color: #fff;
+  font-size: 32px;
+  padding: 5px 10px;
+}
+
+#container {
+  min-height: 100%;
+  height: 100%;
+  width: 960px;
+  margin: 0 auto;
+  padding: 0 0px;
+  background-color: transparent;
+}
+
+#footer {
+  text-align: center;
 }
